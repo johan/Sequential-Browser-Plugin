@@ -24,6 +24,14 @@
 	<array>
 		<dict>
 			<key>BundleIdentifier</key>
+			<string>jp.hmdt.shiira</string>
+			<key>MaxBundleVersion</key>
+			<string>2.2</string>
+			<key>MinBundleVersion</key>
+			<string>2.2</string>
+		</dict>
+		<dict>
+			<key>BundleIdentifier</key>
 			<string>com.omnigroup.OmniWeb5</string>
 			<key>MaxBundleVersion</key>
 			<string>622</string>

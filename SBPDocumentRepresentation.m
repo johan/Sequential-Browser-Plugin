@@ -30,12 +30,6 @@ DEALINGS WITH THE SOFTWARE. */
 
 @implementation SBPDocumentRepresentation
 
-#pragma mark NSObject
-
-+ (void)initialize
-{
-}
-
 #pragma mark Instance Methods
 
 - (void)undisplayInWebView:(WebView *)webView
@@ -50,10 +44,7 @@ DEALINGS WITH THE SOFTWARE. */
 
 - (void)setDataSource:(WebDataSource *)dataSource
 {
-	WebView *const webView = [[dataSource webFrame] webView];
-	NSWindow *const hostWindow = [webView hostWindow];
-	NSEvent *const currentEvent = [(hostWindow ? hostWindow : [webView window]) currentEvent];
-	if([[SBPController sharedController] openSequentialWithDataSource:dataSource inBackground:!!([currentEvent modifierFlags] & NSShiftKeyMask)]) [self performSelector:@selector(undisplayInWebView:) withObject:webView afterDelay:0 inModes:[NSArray arrayWithObject:(NSString *)kCFRunLoopCommonModes]];
+	if([[SBPController sharedController] openSequentialWithDataSource:dataSource inBackground:NO]) [self performSelector:@selector(undisplayInWebView:) withObject:[[dataSource webFrame] webView] afterDelay:0 inModes:[NSArray arrayWithObject:(NSString *)kCFRunLoopCommonModes]];
 }
 - (void)receivedData:(NSData *)data withDataSource:(WebDataSource *)dataSource {}
 - (void)receivedError:(NSError *)error withDataSource:(WebDataSource *)dataSource {}

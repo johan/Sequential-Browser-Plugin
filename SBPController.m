@@ -74,9 +74,23 @@ static IMP SBPOriginalContextMenuIMP = NULL;
 
 + (void)load
 {
+	NSString *const ident = [[NSBundle mainBundle] bundleIdentifier];
+	SEL viewSourceSelector = NULL;
+	Class UIDelegateClass = Nil;
+	if([@"com.apple.Safari" isEqualToString:ident]) {
+		viewSourceSelector = @selector(viewSource:);
+		UIDelegateClass = NSClassFromString(@"BrowserWebView");
+	} else if([@"com.omnigroup.OmniWeb5" isEqualToString:ident]) {
+		viewSourceSelector = @selector(viewSource:);
+		UIDelegateClass = NSClassFromString(@"OWTab");
+	} else if([@"jp.hmdt.shiira" isEqualToString:ident]) {
+		viewSourceSelector = @selector(viewPageSourceAction:);
+		UIDelegateClass = NSClassFromString(@"SRPageController");
+	} else return;
+
 	NSMenu *menu = nil;
 	NSUInteger index = 0;
-	if([[NSApp mainMenu] SBP_getMenu:&menu index:&index ofItemWithTarget:nil action:@selector(viewSource:)]) {
+	if([[NSApp mainMenu] SBP_getMenu:&menu index:&index ofItemWithTarget:nil action:viewSourceSelector]) {
 		NSMenuItem *const foregroundItem = [self _menuItemWithTitle:NSLocalizedString(@"View in Sequential", @"Menu item label.") representedObject:nil action:@selector(viewCurrentPageInSequentialInForeground:)];
 		[foregroundItem setKeyEquivalent:@"u"];
 		[foregroundItem setKeyEquivalentModifierMask:NSCommandKeyMask | NSControlKeyMask];
@@ -93,9 +107,7 @@ static IMP SBPOriginalContextMenuIMP = NULL;
 	NSEnumerator *const MIMETypeEnum = [[self supportedMIMETypes] objectEnumerator];
 	while((MIMEType = [MIMETypeEnum nextObject])) [WebView registerViewClass:[SBPDocumentView class] representationClass:[SBPDocumentRepresentation class] forMIMEType:MIMEType];
 
-	Class class = NSClassFromString(@"BrowserWebView");
-	if(!class) class = NSClassFromString(@"OWTab");
-	SBPOriginalContextMenuIMP = [class SBP_useImplementationFromClass:self forSelector:@selector(webView:contextMenuItemsForElement:defaultMenuItems:)];
+	SBPOriginalContextMenuIMP = [UIDelegateClass SBP_useImplementationFromClass:self forSelector:@selector(webView:contextMenuItemsForElement:defaultMenuItems:)];
 }
 
 #pragma mark Instance Methods
