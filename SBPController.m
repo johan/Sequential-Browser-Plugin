@@ -91,12 +91,12 @@ static IMP SBPOriginalContextMenuIMP = NULL;
 	NSMenu *menu = nil;
 	NSUInteger index = 0;
 	if([[NSApp mainMenu] SBP_getMenu:&menu index:&index ofItemWithTarget:nil action:viewSourceSelector]) {
-		NSMenuItem *const foregroundItem = [self _menuItemWithTitle:NSLocalizedString(@"View in Sequential", @"Menu item label.") representedObject:nil action:@selector(viewCurrentPageInSequentialInForeground:)];
+		NSMenuItem *const foregroundItem = [self _menuItemWithTitle:NSLocalizedString(@"View with Sequential", @"Menu item label.") representedObject:nil action:@selector(viewCurrentPageInSequentialInForeground:)];
 		[foregroundItem setKeyEquivalent:@"u"];
 		[foregroundItem setKeyEquivalentModifierMask:NSCommandKeyMask | NSControlKeyMask];
 		[menu insertItem:foregroundItem atIndex:index];
 
-		NSMenuItem *const backgroundItem = [self _menuItemWithTitle:NSLocalizedString(@"View in Sequential in Background", @"Menu item label.") representedObject:nil action:@selector(viewCurrentPageInSequentialInBackground:)];
+		NSMenuItem *const backgroundItem = [self _menuItemWithTitle:NSLocalizedString(@"View with Sequential in Background", @"Menu item label.") representedObject:nil action:@selector(viewCurrentPageInSequentialInBackground:)];
 		[backgroundItem setKeyEquivalent:@"u"];
 		[backgroundItem setKeyEquivalentModifierMask:NSCommandKeyMask | NSControlKeyMask | NSShiftKeyMask];
 		[backgroundItem setAlternate:YES];
@@ -170,8 +170,8 @@ static IMP SBPOriginalContextMenuIMP = NULL;
 	NSMutableArray *const items = [[(SBPOriginalContextMenuIMP ? SBPOriginalContextMenuIMP(self, _cmd, sender, element, defaultMenuItems) : defaultMenuItems) mutableCopy] autorelease];
 	NSURL *const URL = [element objectForKey:WebElementLinkURLKey];
 	if(!URL) return items;
-	[items insertObject:[SBPController _menuItemWithTitle:NSLocalizedString(@"Open in Sequential", @"Contexual menu item label.") representedObject:URL action:@selector(viewLinkInSequentialInForeground:)] atIndex:0];
-	[items insertObject:[SBPController _menuItemWithTitle:NSLocalizedString(@"Open in Sequential in Background", @"Contexual menu item label.") representedObject:URL action:@selector(viewLinkInSequentialInBackground:)] atIndex:1];
+	[items insertObject:[SBPController _menuItemWithTitle:NSLocalizedString(@"Open Link with Sequential", @"Contexual menu item label.") representedObject:URL action:@selector(viewLinkInSequentialInForeground:)] atIndex:0];
+	[items insertObject:[SBPController _menuItemWithTitle:NSLocalizedString(@"Open Link with Sequential in Background", @"Contexual menu item label.") representedObject:URL action:@selector(viewLinkInSequentialInBackground:)] atIndex:1];
 	[items insertObject:[NSMenuItem separatorItem] atIndex:2];
 	return items;
 }

@@ -14,6 +14,7 @@
 		0E511A180E61C9FD006C4715 /* SBPDocumentRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E511A170E61C9FD006C4715 /* SBPDocumentRepresentation.m */; };
 		0E511A1B0E61CCEA006C4715 /* SBPDocumentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E511A1A0E61CCEA006C4715 /* SBPDocumentView.m */; };
 		0EE930620E6202BD002A8F6E /* NSObjectAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EE930610E6202BD002A8F6E /* NSObjectAdditions.m */; };
+		0EE934B40E6338BD002A8F6E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0EE934B30E6338BD002A8F6E /* Localizable.strings */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -35,6 +36,7 @@
 		0E511A1A0E61CCEA006C4715 /* SBPDocumentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBPDocumentView.m; sourceTree = "<group>"; };
 		0EE930600E6202BD002A8F6E /* NSObjectAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSObjectAdditions.h; sourceTree = "<group>"; };
 		0EE930610E6202BD002A8F6E /* NSObjectAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSObjectAdditions.m; sourceTree = "<group>"; };
+		0EE934B10E6338B6002A8F6E /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF630370AF2F00C91783 /* SequentialBrowserPlugin_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SequentialBrowserPlugin_Prefix.pch; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* SequentialBrowserPlugin.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SequentialBrowserPlugin.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -81,6 +83,7 @@
 			children = (
 				8D5B49B7048680CD000E48DA /* Info.plist */,
 				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
+				0EE934B30E6338BD002A8F6E /* Localizable.strings */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -183,6 +186,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */,
+				0EE934B40E6338BD002A8F6E /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,6 +215,14 @@
 				089C167EFE841241C02AAC07 /* English */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		0EE934B30E6338BD002A8F6E /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0EE934B10E6338B6002A8F6E /* English */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
