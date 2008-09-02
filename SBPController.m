@@ -168,11 +168,28 @@ static IMP SBPOriginalContextMenuIMP = NULL;
              defaultMenuItems:(NSArray *)defaultMenuItems
 {
 	NSMutableArray *const items = [[(SBPOriginalContextMenuIMP ? SBPOriginalContextMenuIMP(self, _cmd, sender, element, defaultMenuItems) : defaultMenuItems) mutableCopy] autorelease];
-	NSURL *const URL = [element objectForKey:WebElementLinkURLKey];
-	if(!URL) return items;
-	[items insertObject:[SBPController _menuItemWithTitle:NSLocalizedString(@"Open Link with Sequential", @"Contexual menu item label.") representedObject:URL action:@selector(viewLinkInSequentialInForeground:)] atIndex:0];
-	[items insertObject:[SBPController _menuItemWithTitle:NSLocalizedString(@"Open Link with Sequential in Background", @"Contexual menu item label.") representedObject:URL action:@selector(viewLinkInSequentialInBackground:)] atIndex:1];
-	[items insertObject:[NSMenuItem separatorItem] atIndex:2];
+	NSURL *const imageURL = [element objectForKey:WebElementImageURLKey];
+	if(imageURL) {
+		NSMenuItem *const item = [SBPController _menuItemWithTitle:NSLocalizedString(@"Open Image with Sequential", @"Contexual menu label.") representedObject:imageURL action:@selector(viewLinkInSequentialInForeground:)];
+		NSMenu *const submenu = [[[NSMenu alloc] init] autorelease];
+		[item setSubmenu:submenu];
+		[items insertObject:item atIndex:0];
+		[items insertObject:[NSMenuItem separatorItem] atIndex:1];
+
+		[submenu addItem:[SBPController _menuItemWithTitle:NSLocalizedString(@"in Foreground", @"Contexual menu item label.") representedObject:imageURL action:@selector(viewLinkInSequentialInForeground:)]];
+		[submenu addItem:[SBPController _menuItemWithTitle:NSLocalizedString(@"in Background", @"Contexual menu item label.") representedObject:imageURL action:@selector(viewLinkInSequentialInBackground:)]];
+	}
+	NSURL *const linkURL = [element objectForKey:WebElementLinkURLKey];
+	if(linkURL) {
+		NSMenuItem *const item = [SBPController _menuItemWithTitle:NSLocalizedString(@"Open Link with Sequential", @"Contexual menu label.") representedObject:linkURL action:@selector(viewLinkInSequentialInForeground:)];
+		NSMenu *const submenu = [[[NSMenu alloc] init] autorelease];
+		[item setSubmenu:submenu];
+		[items insertObject:item atIndex:0];
+		if(!imageURL) [items insertObject:[NSMenuItem separatorItem] atIndex:1];
+
+		[submenu addItem:[SBPController _menuItemWithTitle:NSLocalizedString(@"in Foreground", @"Contexual menu item label.") representedObject:linkURL action:@selector(viewLinkInSequentialInForeground:)]];
+		[submenu addItem:[SBPController _menuItemWithTitle:NSLocalizedString(@"in Background", @"Contexual menu item label.") representedObject:linkURL action:@selector(viewLinkInSequentialInBackground:)]];
+	}
 	return items;
 }
 
