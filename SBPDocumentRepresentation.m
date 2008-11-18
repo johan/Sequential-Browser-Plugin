@@ -44,7 +44,10 @@ DEALINGS WITH THE SOFTWARE. */
 
 - (void)setDataSource:(WebDataSource *)dataSource
 {
-	if([[SBPController sharedController] openSequentialWithDataSource:dataSource inBackground:NO]) [self performSelector:@selector(undisplayInWebView:) withObject:[[dataSource webFrame] webView] afterDelay:0 inModes:[NSArray arrayWithObject:(NSString *)kCFRunLoopCommonModes]];
+	WebFrame *const frame = [dataSource webFrame];
+	WebView *const webView = [frame webView];
+	if(frame != [webView mainFrame]) return;
+	if([[SBPController sharedController] openSequentialWithDataSource:dataSource inBackground:NO]) [self performSelector:@selector(undisplayInWebView:) withObject:webView afterDelay:0 inModes:[NSArray arrayWithObject:(NSString *)kCFRunLoopCommonModes]];
 }
 - (void)receivedData:(NSData *)data withDataSource:(WebDataSource *)dataSource {}
 - (void)receivedError:(NSError *)error withDataSource:(WebDataSource *)dataSource {}
