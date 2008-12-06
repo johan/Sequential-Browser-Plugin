@@ -53,7 +53,7 @@ static IMP SBPOriginalContextMenuIMP = NULL;
 }
 + (NSArray *)supportedMIMETypes
 {
-	return [NSArray arrayWithObjects:@"application/pdf", @"application/x-pdf", @"application/acrobat", @"applications/vnd.pdf", @"text/pdf", @"text/x-pdf", @"application/postscript", @"image/tiff", @"image/raw", @"image/exr", @"image/bmp", @"image/x-bmp", @"image/x-windows-bmp", @"image/ms-bmp", @"image/x-ms-bmp", @"application/bmp", @"image/gif", @"image/jpeg", @"image/jpg", @"image/pict", @"image/x-pict", @"image/png", @"application/png", @"application/x-png", @"image/photoshop", @"image/x-photoshop", @"image/psd", @"application/photoshop", @"application/psd", nil];
+	return [NSArray arrayWithObjects:@"application/pdf", @"application/x-pdf", @"application/acrobat", @"applications/vnd.pdf", @"text/pdf", @"text/x-pdf", @"application/postscript", @"image/tiff", @"image/raw", @"image/exr", @"image/bmp", @"image/x-bmp", @"image/x-windows-bmp", @"image/ms-bmp", @"image/x-ms-bmp", @"application/bmp", @"image/gif", @"image/jpeg", @"image/jpg", @"image/pjpeg", @"image/pict", @"image/x-pict", @"image/png", @"application/png", @"application/x-png", @"image/photoshop", @"image/x-photoshop", @"image/psd", @"application/photoshop", @"application/psd", nil];
 }
 
 #pragma mark Private Protocol
