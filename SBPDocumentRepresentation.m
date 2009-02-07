@@ -27,7 +27,6 @@ DEALINGS WITH THE SOFTWARE. */
 // Classes
 #import "SBPController.h"
 
-
 @implementation SBPDocumentRepresentation
 
 #pragma mark Instance Methods
@@ -37,7 +36,6 @@ DEALINGS WITH THE SOFTWARE. */
 	if([webView goBack]) return;
 	id const UIDelegate = [webView UIDelegate];
 	if([UIDelegate respondsToSelector:@selector(webViewClose:)]) [UIDelegate webViewClose:webView];
-	else [[webView window] close];
 }
 
 #pragma mark WebDocumentRepresentation Protocol
@@ -62,7 +60,7 @@ DEALINGS WITH THE SOFTWARE. */
 }
 - (NSString *)title
 {
-	return @"";
+	return NSLocalizedStringFromTableInBundle(@"Opening in Sequential...", nil, [NSBundle bundleForClass:[self class]], nil);
 }
 
 @end

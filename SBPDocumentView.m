@@ -31,8 +31,28 @@ DEALINGS WITH THE SOFTWARE. */
 - (void)setDataSource:(WebDataSource *)dataSource {}
 - (void)dataSourceUpdated:(WebDataSource *)dataSource {}
 - (void)setNeedsLayout:(BOOL)flag {}
-- (void)layout {}
+- (void)layout
+{
+	[self setFrame:[[self superview] bounds]];
+}
 - (void)viewWillMoveToHostWindow:(NSWindow *)hostWindow {}
 - (void)viewDidMoveToHostWindow {}
+
+#pragma mark NSView
+
+- (BOOL)isOpaque
+{
+	return YES;
+}
+- (void)drawRect:(NSRect)aRect
+{
+	[[NSColor whiteColor] set];
+	NSRectFill(aRect);
+
+	NSAttributedString *const str = [[[NSAttributedString alloc] initWithString:NSLocalizedStringFromTableInBundle(@"Opening in Sequential...", nil, [NSBundle bundleForClass:[self class]], nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:[NSFont boldSystemFontOfSize:20.0f], NSFontAttributeName, [NSColor grayColor], NSForegroundColorAttributeName, nil]] autorelease];
+	NSSize const s = [str size];
+	NSRect const b = [self bounds];
+	[str drawInRect:NSInsetRect(b, NSWidth(b) / 2.0f - s.width / 2.0f, NSHeight(b) / 2.0f - s.height / 2.0f)];
+}
 
 @end

@@ -35,8 +35,14 @@ DEALINGS WITH THE SOFTWARE. */
 - (IBAction)viewLinkInSequentialInForeground:(id)sender;
 - (IBAction)viewLinkInSequentialInBackground:(id)sender;
 
-- (BOOL)openSequentialWithCurrentPageInBackground:(BOOL)flag;
+- (void)openSequentialWithCurrentPageInBackground:(BOOL)flag;
 - (BOOL)openSequentialWithDataSource:(WebDataSource *)dataSource inBackground:(BOOL)flag;
 - (BOOL)openSequentialWithURL:(NSURL *)aURL inBackground:(BOOL)flag;
+- (id)javaScriptPreferenceForBrowserController:(id)browserController;
+
+- (IBAction)SBP_toggleJavaScriptEnabled:(id)sender;
+- (BOOL)SBP_validateMenuItem:(NSMenuItem *)anItem;
+- (void)setLinkHoverText:(NSString *)aString;
+- (NSArray *)webView:(WebView *)sender contextMenuItemsForElement:(NSDictionary *)element defaultMenuItems:(NSArray *)defaultMenuItems;
 
 @end

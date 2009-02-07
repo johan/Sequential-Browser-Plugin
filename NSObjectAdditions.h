@@ -26,6 +26,7 @@ DEALINGS WITH THE SOFTWARE. */
 
 @interface NSObject (SBPAdditions)
 
++ (IMP)SBP_useImplementationFromClass:(Class)class originalSelector:(SEL)originalSel forSelector:(SEL)newSel;
 + (IMP)SBP_useImplementationFromClass:(Class)class forSelector:(SEL)aSel;
 
 @end

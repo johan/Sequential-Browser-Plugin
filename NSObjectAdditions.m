@@ -27,11 +27,14 @@ DEALINGS WITH THE SOFTWARE. */
 
 @implementation NSObject (SBPAdditions)
 
-+ (IMP)SBP_useImplementationFromClass:(Class)class
-       forSelector:(SEL)aSel
++ (IMP)SBP_useImplementationFromClass:(Class)class originalSelector:(SEL)originalSel forSelector:(SEL)newSel
 {
-	Method newMethod = class_getInstanceMethod(class, aSel);
-	return newMethod ? class_replaceMethod(self, aSel, method_getImplementation(newMethod), method_getTypeEncoding(newMethod)) : NULL;
+	Method const newMethod = class_getInstanceMethod(class, originalSel);
+	return newMethod ? class_replaceMethod(self, newSel, method_getImplementation(newMethod), method_getTypeEncoding(newMethod)) : NULL;
+}
++ (IMP)SBP_useImplementationFromClass:(Class)class forSelector:(SEL)aSel
+{
+	return [self SBP_useImplementationFromClass:class originalSelector:aSel forSelector:aSel];
 }
 
 @end
