@@ -33,9 +33,10 @@ DEALINGS WITH THE SOFTWARE. */
 #import "NSObjectAdditions.h"
 #import "NSViewAdditions.h"
 
-static NSArray *(*SBPOriginalContextMenuIMP)(id, SEL, WebView *, NSDictionary *, NSArray *) = NULL;
-static void (*SBPOriginalSetLinkHoverTextIMP)(id, SEL, NSString *) = NULL;
-static BOOL (*SBPOriginalValidateMenuItemIMP)(id, SEL, NSMenuItem *) = NULL;
+static NSArray *(*SBPOriginalContextMenuIMP)(id, SEL, WebView *, NSDictionary *, NSArray *);
+static void (*SBPOriginalSetLinkHoverTextIMP)(id, SEL, NSString *);
+static BOOL (*SBPOriginalValidateMenuItemIMP)(id, SEL, NSMenuItem *);
+static id (*SBPOriginalWindowInitIMP)(id, SEL, NSRect, NSUInteger, NSBackingStoreType, BOOL);
 
 @interface SBPController (Private)
 
@@ -113,6 +114,7 @@ static BOOL (*SBPOriginalValidateMenuItemIMP)(id, SEL, NSMenuItem *) = NULL;
 		UIDelegateClass = NSClassFromString(@"OWTab");
 		Class const browserControllerClass = NSClassFromString(@"OWBrowserController");
 		SBPOriginalSetLinkHoverTextIMP = (void (*)(id, SEL, NSString *))[browserControllerClass SBP_useImplementationFromClass:self forSelector:@selector(setLinkHoverText:)];
+		SBPOriginalWindowInitIMP = (id (*)(id, SEL, NSRect, NSUInteger, NSBackingStoreType, BOOL))[NSClassFromString(@"OWBrowserWindow") SBP_useImplementationFromClass:self forSelector:@selector(initWithContentRect:styleMask:backing:defer:)];
 		if([[NSApp mainMenu] SBP_getMenu:&menu index:&index ofItemWithTarget:nil action:@selector(toggleSitePreferences:)]) {
 			NSMenuItem *const jsItem = [self _menuItemWithTitle:NSLocalizedStringFromTableInBundle(@"Turn JavaScript On", nil, bundle, nil) representedObject:nil action:@selector(SBP_toggleJavaScriptEnabled:)];
 			[jsItem setTarget:nil];
@@ -203,6 +205,13 @@ static BOOL (*SBPOriginalValidateMenuItemIMP)(id, SEL, NSMenuItem *) = NULL;
 #pragma mark -
 
 // These methods are moved to application classes.
+- (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)aStyle backing:(NSBackingStoreType)bufferingType defer:(BOOL)flag
+{
+	if(SBPOriginalWindowInitIMP) self = SBPOriginalWindowInitIMP(self, _cmd, contentRect, aStyle, bufferingType, flag);
+	else self = [(NSWindow *)super initWithContentRect:contentRect styleMask:aStyle backing:bufferingType defer:flag];
+	if([self respondsToSelector:@selector(setShowsToolbarButton:)]) [(NSWindow *)self setShowsToolbarButton:NO];
+	return self;
+}
 - (IBAction)SBP_toggleJavaScriptEnabled:(id)sender
 {
 	id const sitePref = [[SBPController sharedController] javaScriptPreferenceForBrowserController:self];

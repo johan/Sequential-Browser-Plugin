@@ -40,6 +40,7 @@ DEALINGS WITH THE SOFTWARE. */
 - (BOOL)openSequentialWithURL:(NSURL *)aURL inBackground:(BOOL)flag;
 - (id)javaScriptPreferenceForBrowserController:(id)browserController;
 
+- (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)aStyle backing:(NSBackingStoreType)bufferingType defer:(BOOL)flag;
 - (IBAction)SBP_toggleJavaScriptEnabled:(id)sender;
 - (BOOL)SBP_validateMenuItem:(NSMenuItem *)anItem;
 - (void)setLinkHoverText:(NSString *)aString;
