@@ -50,13 +50,10 @@ static id (*SBPOriginalWindowInitIMP)(id, SEL, NSRect, NSUInteger, NSBackingStor
 - (NSString *)documentTitle;
 - (void)setWindowTitle:(NSString *)aString;
 - (BOOL)statusBarVisible;
-- (id)siteEditor;
+- (id)activeTab;
 
-// OWSiteEditor
-- (id)sitePreferencesController;
-
-// OWSitePreferencesController (Private)
-- (id)_preferenceForKey:(NSString *)aString;
+// OWTab
+- (id)preferenceForKey:(id)aString;
 
 // OWSitePreference
 - (BOOL)boolValue;
@@ -194,12 +191,10 @@ static id (*SBPOriginalWindowInitIMP)(id, SEL, NSRect, NSUInteger, NSBackingStor
 }
 - (id)javaScriptPreferenceForBrowserController:(id)browserController
 {
-	if(![browserController respondsToSelector:@selector(siteEditor)]) return nil;
-	id const editor = [browserController siteEditor];
-	if(![editor respondsToSelector:@selector(sitePreferencesController)]) return nil;
-	id const prefController = [editor sitePreferencesController];
-	if(![prefController respondsToSelector:@selector(_preferenceForKey:)]) return nil;
-	return [prefController _preferenceForKey:@"JavaScriptEnabled"];
+	if(![browserController respondsToSelector:@selector(activeTab)]) return nil;
+	id const tab = [browserController activeTab];
+	if(![tab respondsToSelector:@selector(preferenceForKey:)]) return nil;
+	return [tab preferenceForKey:@"JavaScriptEnabled"];
 }
 
 #pragma mark -
