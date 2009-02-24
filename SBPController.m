@@ -34,30 +34,10 @@ DEALINGS WITH THE SOFTWARE. */
 #import "NSViewAdditions.h"
 
 static NSArray *(*SBPOriginalContextMenuIMP)(id, SEL, WebView *, NSDictionary *, NSArray *);
-static void (*SBPOriginalSetLinkHoverTextIMP)(id, SEL, NSString *);
-static BOOL (*SBPOriginalValidateMenuItemIMP)(id, SEL, NSMenuItem *);
-static id (*SBPOriginalWindowInitIMP)(id, SEL, NSRect, NSUInteger, NSBackingStoreType, BOOL);
 
 @interface SBPController (Private)
 
 + (NSMenuItem *)_menuItemWithTitle:(NSString *)title representedObject:(id)anObject action:(SEL)action;
-
-@end
-
-@interface NSObject (SBP_OWMethods)
-
-// OWBrowserController
-- (NSString *)documentTitle;
-- (void)setWindowTitle:(NSString *)aString;
-- (BOOL)statusBarVisible;
-- (id)activeTab;
-
-// OWTab
-- (id)preferenceForKey:(id)aString;
-
-// OWSitePreference
-- (BOOL)boolValue;
-- (void)setBoolValue:(BOOL)flag;
 
 @end
 
@@ -99,8 +79,6 @@ static id (*SBPOriginalWindowInitIMP)(id, SEL, NSRect, NSUInteger, NSBackingStor
 	NSString *const ident = [[NSBundle mainBundle] bundleIdentifier];
 	SEL viewSourceSelector = NULL;
 	Class UIDelegateClass = Nil;
-	NSMenu *menu = nil;
-	NSUInteger index = 0;
 	NSBundle *const bundle = [NSBundle bundleForClass:self];
 
 	if([@"com.apple.Safari" isEqualToString:ident]) {
@@ -109,23 +87,13 @@ static id (*SBPOriginalWindowInitIMP)(id, SEL, NSRect, NSUInteger, NSBackingStor
 	} else if([@"com.omnigroup.OmniWeb5" isEqualToString:ident]) {
 		viewSourceSelector = @selector(viewSource:);
 		UIDelegateClass = NSClassFromString(@"OWTab");
-		Class const browserControllerClass = NSClassFromString(@"OWBrowserController");
-		SBPOriginalSetLinkHoverTextIMP = (void (*)(id, SEL, NSString *))[browserControllerClass SBP_useImplementationFromClass:self forSelector:@selector(setLinkHoverText:)];
-		SBPOriginalWindowInitIMP = (id (*)(id, SEL, NSRect, NSUInteger, NSBackingStoreType, BOOL))[NSClassFromString(@"OWBrowserWindow") SBP_useImplementationFromClass:self forSelector:@selector(initWithContentRect:styleMask:backing:defer:)];
-		if([[NSApp mainMenu] SBP_getMenu:&menu index:&index ofItemWithTarget:nil action:@selector(toggleSitePreferences:)]) {
-			NSMenuItem *const jsItem = [self _menuItemWithTitle:NSLocalizedStringFromTableInBundle(@"Turn JavaScript On", nil, bundle, nil) representedObject:nil action:@selector(SBP_toggleJavaScriptEnabled:)];
-			[jsItem setTarget:nil];
-			[jsItem setKeyEquivalent:@"x"];
-			[jsItem setKeyEquivalentModifierMask:NSCommandKeyMask | NSAlternateKeyMask];
-			[menu insertItem:jsItem atIndex:index + 1];
-			(void)[browserControllerClass SBP_useImplementationFromClass:self forSelector:@selector(SBP_toggleJavaScriptEnabled:)];
-			SBPOriginalValidateMenuItemIMP = (BOOL (*)(id, SEL, NSMenuItem *))[browserControllerClass SBP_useImplementationFromClass:self originalSelector:@selector(SBP_validateMenuItem:) forSelector:@selector(validateMenuItem:)];
-		}
 	} else if([@"jp.hmdt.shiira" isEqualToString:ident]) {
 		viewSourceSelector = @selector(viewPageSourceAction:);
 		UIDelegateClass = NSClassFromString(@"SRPageController");
 	} else return;
 
+	NSMenu *menu = nil;
+	NSUInteger index = 0;
 	if([[NSApp mainMenu] SBP_getMenu:&menu index:&index ofItemWithTarget:nil action:viewSourceSelector]) {
 		NSMenuItem *const foregroundItem = [self _menuItemWithTitle:NSLocalizedStringFromTableInBundle(@"View with Sequential", nil, bundle, nil) representedObject:nil action:@selector(viewCurrentPageInSequentialInForeground:)];
 		[foregroundItem setKeyEquivalent:@"u"];
@@ -189,46 +157,10 @@ static id (*SBPOriginalWindowInitIMP)(id, SEL, NSRect, NSUInteger, NSBackingStor
 	if(!appPath || ![[NSFileManager defaultManager] fileExistsAtPath:appPath isDirectory:NULL]) return NO;
 	return [[NSWorkspace sharedWorkspace] openURLs:[NSArray arrayWithObject:aURL] withAppBundleIdentifier:@"com.SequentialX.Sequential" options:(flag ? NSWorkspaceLaunchWithoutActivation : kNilOptions) additionalEventParamDescriptor:nil launchIdentifiers:NULL];
 }
-- (id)javaScriptPreferenceForBrowserController:(id)browserController
-{
-	if(![browserController respondsToSelector:@selector(activeTab)]) return nil;
-	id const tab = [browserController activeTab];
-	if(![tab respondsToSelector:@selector(preferenceForKey:)]) return nil;
-	return [tab preferenceForKey:@"JavaScriptEnabled"];
-}
 
 #pragma mark -
 
 // These methods are moved to application classes.
-- (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)aStyle backing:(NSBackingStoreType)bufferingType defer:(BOOL)flag
-{
-	if(SBPOriginalWindowInitIMP) self = SBPOriginalWindowInitIMP(self, _cmd, contentRect, aStyle, bufferingType, flag);
-	else self = [(NSWindow *)super initWithContentRect:contentRect styleMask:aStyle backing:bufferingType defer:flag];
-	if([self respondsToSelector:@selector(setShowsToolbarButton:)]) [(NSWindow *)self setShowsToolbarButton:NO];
-	return self;
-}
-- (IBAction)SBP_toggleJavaScriptEnabled:(id)sender
-{
-	id const sitePref = [[SBPController sharedController] javaScriptPreferenceForBrowserController:self];
-	if([sitePref respondsToSelector:@selector(setBoolValue:)] && [sitePref respondsToSelector:@selector(boolValue)]) [sitePref setBoolValue:![sitePref boolValue]];
-	else NSBeep();
-}
-- (BOOL)SBP_validateMenuItem:(NSMenuItem *)anItem
-{
-	SEL const action = [anItem action];
-	if(@selector(SBP_toggleJavaScriptEnabled:) == action) {
-		NSBundle *const bundle = [NSBundle bundleForClass:[SBPController class]];
-		id const sitePref = [[SBPController sharedController] javaScriptPreferenceForBrowserController:self];
-		[anItem setTitle:([sitePref respondsToSelector:@selector(boolValue)] && [sitePref boolValue] ? NSLocalizedStringFromTableInBundle(@"Turn JavaScript Off", nil, bundle, nil) : NSLocalizedStringFromTableInBundle(@"Turn JavaScript On", nil, bundle, nil))];
-		return [self respondsToSelector:action];
-	}
-	return SBPOriginalValidateMenuItemIMP ? SBPOriginalValidateMenuItemIMP(self, _cmd, anItem) : [self respondsToSelector:action];
-}
-- (void)setLinkHoverText:(NSString *)aString
-{
-	if([self respondsToSelector:@selector(setWindowTitle:)] && [self respondsToSelector:@selector(documentTitle)] && [self respondsToSelector:@selector(statusBarVisible)] && ![self statusBarVisible]) [self setWindowTitle:(aString ? aString : [self documentTitle])];
-	if(SBPOriginalSetLinkHoverTextIMP) SBPOriginalSetLinkHoverTextIMP(self, _cmd, aString);
-}
 - (NSArray *)webView:(WebView *)sender
              contextMenuItemsForElement:(NSDictionary *)element
              defaultMenuItems:(NSArray *)defaultMenuItems

@@ -26,6 +26,6 @@ DEALINGS WITH THE SOFTWARE. */
 
 @interface NSMenu (SBPAdditions)
 
-- (BOOL)SBP_getMenu:(out NSMenu **)outMenu index:(out NSUInteger *)outIndex ofItemWithTarget:(id)target action:(SEL)aSEL;
+- (BOOL)SBP_getMenu:(out NSMenu **)outMenu index:(out NSUInteger *)outIndex ofItemWithTarget:(id)target action:(SEL)action;
 
 @end
