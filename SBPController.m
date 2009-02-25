@@ -33,7 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "NSObjectAdditions.h"
 #import "NSViewAdditions.h"
 
-static NSArray *(*SBPOriginalContextMenuIMP)(id, SEL, WebView *, NSDictionary *, NSArray *);
+static Class SBPUIDelegateClass;
+static NSArray *(*SBPUIDelegateClass_webView_contextMenuItemsForElement_defaultMenuItems)(id, SEL, WebView *, NSDictionary *, NSArray *);
 
 @interface SBPController (Private)
 
@@ -78,18 +79,17 @@ static NSArray *(*SBPOriginalContextMenuIMP)(id, SEL, WebView *, NSDictionary *,
 
 	NSString *const ident = [[NSBundle mainBundle] bundleIdentifier];
 	SEL viewSourceSelector = NULL;
-	Class UIDelegateClass = Nil;
 	NSBundle *const bundle = [NSBundle bundleForClass:self];
 
 	if([@"com.apple.Safari" isEqualToString:ident]) {
 		viewSourceSelector = @selector(viewSource:);
-		UIDelegateClass = NSClassFromString(@"BrowserWebView");
+		SBPUIDelegateClass = NSClassFromString(@"BrowserWebView");
 	} else if([@"com.omnigroup.OmniWeb5" isEqualToString:ident]) {
 		viewSourceSelector = @selector(viewSource:);
-		UIDelegateClass = NSClassFromString(@"OWTab");
+		SBPUIDelegateClass = NSClassFromString(@"OWTab");
 	} else if([@"jp.hmdt.shiira" isEqualToString:ident]) {
 		viewSourceSelector = @selector(viewPageSourceAction:);
-		UIDelegateClass = NSClassFromString(@"SRPageController");
+		SBPUIDelegateClass = NSClassFromString(@"SRPageController");
 	} else return;
 
 	NSMenu *menu = nil;
@@ -111,7 +111,7 @@ static NSArray *(*SBPOriginalContextMenuIMP)(id, SEL, WebView *, NSDictionary *,
 	NSEnumerator *const MIMETypeEnum = [[self supportedMIMETypes] objectEnumerator];
 	while((MIMEType = [MIMETypeEnum nextObject])) [WebView registerViewClass:[SBPDocumentView class] representationClass:[SBPDocumentRepresentation class] forMIMEType:MIMEType];
 
-	SBPOriginalContextMenuIMP = (NSArray *(*)(id, SEL, WebView *, NSDictionary *, NSArray *))[UIDelegateClass SBP_useImplementationFromClass:self forSelector:@selector(webView:contextMenuItemsForElement:defaultMenuItems:)];
+	SBPUIDelegateClass_webView_contextMenuItemsForElement_defaultMenuItems = (NSArray *(*)(id, SEL, WebView *, NSDictionary *, NSArray *))[SBPUIDelegateClass SBP_useImplementationFromClass:self forSelector:@selector(webView:contextMenuItemsForElement:defaultMenuItems:)];
 }
 
 #pragma mark Instance Methods
@@ -165,7 +165,7 @@ static NSArray *(*SBPOriginalContextMenuIMP)(id, SEL, WebView *, NSDictionary *,
              contextMenuItemsForElement:(NSDictionary *)element
              defaultMenuItems:(NSArray *)defaultMenuItems
 {
-	NSMutableArray *const items = [[(SBPOriginalContextMenuIMP ? SBPOriginalContextMenuIMP(self, _cmd, sender, element, defaultMenuItems) : defaultMenuItems) mutableCopy] autorelease];
+	NSMutableArray *const items = [[([SBPUIDelegateClass instancesRespondToSelector:@selector(webView:contextMenuItemsForElement:defaultMenuItems:)] ? SBPUIDelegateClass_webView_contextMenuItemsForElement_defaultMenuItems(self, _cmd, sender, element, defaultMenuItems) : defaultMenuItems) mutableCopy] autorelease];
 	NSURL *const imageURL = [element objectForKey:WebElementImageURLKey];
 	NSBundle *const bundle = [NSBundle bundleForClass:[SBPController class]];
 	if(imageURL) {
