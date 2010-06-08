@@ -33,6 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "NSObjectAdditions.h"
 #import "NSViewAdditions.h"
 
+static NSString *const SBPAutomaticallyOpenForSupportedMIMETypesKey = @"SBPAutomaticallyOpenForSupportedMIMETypes";
+
 static Class SBPUIDelegateClass;
 static NSArray *(*SBPUIDelegateClass_webView_contextMenuItemsForElement_defaultMenuItems)(id, SEL, WebView *, NSDictionary *, NSArray *);
 
@@ -107,9 +109,14 @@ static NSArray *(*SBPUIDelegateClass_webView_contextMenuItemsForElement_defaultM
 		[menu insertItem:backgroundItem atIndex:index + 1];
 	}
 
-	NSString *MIMEType;
-	NSEnumerator *const MIMETypeEnum = [[self supportedMIMETypes] objectEnumerator];
-	while((MIMEType = [MIMETypeEnum nextObject])) [WebView registerViewClass:[SBPDocumentView class] representationClass:[SBPDocumentRepresentation class] forMIMEType:MIMEType];
+	NSUserDefaults *const defaults = [[[NSUserDefaults alloc] init] autorelease];
+	[defaults addSuiteNamed:[[NSBundle bundleForClass:self] bundleIdentifier]];
+	[defaults registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:YES], SBPAutomaticallyOpenForSupportedMIMETypesKey, nil]];
+	if([defaults boolForKey:SBPAutomaticallyOpenForSupportedMIMETypesKey]) {
+		NSString *MIMEType;
+		NSEnumerator *const MIMETypeEnum = [[self supportedMIMETypes] objectEnumerator];
+		while((MIMEType = [MIMETypeEnum nextObject])) [WebView registerViewClass:[SBPDocumentView class] representationClass:[SBPDocumentRepresentation class] forMIMEType:MIMEType];
+	}
 
 	SBPUIDelegateClass_webView_contextMenuItemsForElement_defaultMenuItems = (NSArray *(*)(id, SEL, WebView *, NSDictionary *, NSArray *))[SBPUIDelegateClass SBP_useImplementationFromClass:self forSelector:@selector(webView:contextMenuItemsForElement:defaultMenuItems:)];
 }
